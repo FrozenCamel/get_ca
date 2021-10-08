@@ -12,7 +12,8 @@
 # include  "openssl/err.h"
 int main( int argc, char *argv[])
 {
-	if(argc!=3){
+	if(argc != 3)
+	{
 		printf("./get_ca <server> <port>.insuficient amount of arguments provided. Please provide Server name and port\n");
 		exit(0);
 	}
@@ -21,14 +22,16 @@ int main( int argc, char *argv[])
 	SSL *ssl=NULL;
 	SSL_CTX *ctx = NULL;
 	ctx = SSL_CTX_new(SSLv23_method());
-	if(ctx == NULL){
+	if(ctx == NULL)
+	{
 		ERR_print_errors_fp(stdout);
 		printf("Connection to server failed.\n");
 		SSL_CTX_free(ctx);
 		exit(0);
 	}
 	BIO *bio = BIO_new_ssl_connect(ctx);
-		if (bio == NULL) {
+		if (bio == NULL) 
+		{
 		ERR_print_errors_fp(stdout);
 		printf("Connection to server failed. Please check if correct server address is provided.\n");
 		BIO_free_all(bio);
@@ -46,9 +49,11 @@ int main( int argc, char *argv[])
 		return 0;
 	}
 	int still_connecting = 1;
-	while(still_connecting){
+	while(still_connecting)
+	{
 		int res = SSL_connect(ssl);
-		if (res <= 0){
+		if (res <= 0)
+		{
 			unsigned long error = SSL_get_error(ssl, res);
 			if ( (error != SSL_ERROR_WANT_CONNECT) && (error != SSL_ERROR_WANT_READ) && (error != SSL_ERROR_WANT_WRITE) )
 			{
@@ -70,7 +75,8 @@ int main( int argc, char *argv[])
 		return 0;
 	}
 	X509* cert = sk_X509_value(sk,sk_X509_num(sk)-1);
-	if(cert==NULL){
+	if(cert == NULL)
+	{
 		printf("Could not retrieve server certificate from server.\n");
 		BIO_free_all(bio);
         	SSL_CTX_free(ctx);
