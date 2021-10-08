@@ -21,16 +21,22 @@ int main( int argc, char *argv[])
 	SSL *ssl=NULL;
 	SSL_CTX *ctx = NULL;
 	ctx = SSL_CTX_new(SSLv23_method());
+	if(ctx == NULL){
+		ERR_print_errors_fp(stdout);
+		printf("Connection to server failed.\n");
+		SSL_CTX_free(ctx);
+		exit(0);
+	}
 	BIO *bio = BIO_new_ssl_connect(ctx);
-	BIO_set_conn_hostname(bio, server);
-	BIO_set_conn_port(bio, port);
-	if (bio == NULL) {
+		if (bio == NULL) {
 		ERR_print_errors_fp(stdout);
 		printf("Connection to server failed. Please check if correct server address is provided.\n");
 		BIO_free_all(bio);
                 SSL_CTX_free(ctx);
 		exit(1);
 	}
+	BIO_set_conn_hostname(bio, server);
+	BIO_set_conn_port(bio, port);
 	BIO_get_ssl(bio,&ssl);
 	if (ssl == NULL)
 	{
@@ -56,6 +62,13 @@ int main( int argc, char *argv[])
 		}
 	}
 	STACK_OF(X509) * sk = SSL_get_peer_cert_chain(ssl);
+	if(sk == NULL)
+	{
+		printf ("Could not find certificate chain.\n");
+		BIO_free_all(bio);
+                SSL_CTX_free(ctx);
+		return 0;
+	}
 	X509* cert = sk_X509_value(sk,sk_X509_num(sk)-1);
 	if(cert==NULL){
 		printf("Could not retrieve server certificate from server.\n");
