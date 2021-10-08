@@ -77,6 +77,7 @@ int main( int argc, char *argv[])
 		exit(1);
 	}
 	PEM_write_X509(stdout, cert);
+	SSL_shutdown(ssl);
 	BIO_free_all(bio);
 	SSL_CTX_free(ctx); 
 	return 0;
